@@ -45,6 +45,7 @@
     ;; --- PUNTO 4 (miembro 2): condicional-exp ---
     (expresion ("Si" expresion "{" expresion "}" "sino" "{" expresion "}") condicional-exp)
     ;; --- PUNTO 5 (miembro 2): variableLocal-exp ---
+    (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp)
     ;; --- PUNTO 6 (miembro 3): procedimiento-ex ---
     ;; --- PUNTO 7 (miembro 3): app-exp ---
     ;; --- PUNTO 8 (miembro 4): expresión recursiva ---
@@ -185,6 +186,9 @@
                              (evaluar-expresion true-exp amb)
                              (evaluar-expresion false-exp amb)
                              )))
+       (variableLocal-exp (ids exps cuerpo)
+                         (let ((vals (map (lambda (e) (evaluar-expresion e amb)) exps)))
+                           (evaluar-expresion cuerpo (extendido ids vals amb))))
       )))
 
 ;; verificar-numeros: recibe el nombre de la primitiva y dos valores; lanza
@@ -289,6 +293,18 @@
 (ejecutar "(6 <= 6)")                 ; 1
 (ejecutar "(4 ~ 5)")                  ; -1
 (ejecutar "(4 ~ -5)")                 ; 9
+;; -------------------------------
+;; Pruebas del punto 4
+;; -------------------------------
+(ejecutar "Si (2+3) { 2 } sino { 3 }")                 ; 2
+(ejecutar "Si (longitud(@d) ~ 4) { 2 } sino { 3 }")    ; 3
+
+;; -------------------------------
+;; Pruebas del punto 5
+;; -------------------------------
+(ejecutar "declarar (@x=2;@y=3;@a=7;){ (@a+(@x~@y)) }")   ; 6
+(ejecutar "declarar (@x=2;@y=3;@a=7;){ (@a+@b) }")        ; 9
+
 
 ;; ==================================================================
 ;; PUNTO 9 - Programas en el lenguaje (cada miembro agrega los suyos)
