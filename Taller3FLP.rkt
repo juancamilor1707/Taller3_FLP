@@ -41,8 +41,9 @@
     (expresion (identificador) var-exp)
     (expresion ("(" expresion primitiva-binaria expresion ")") primapp-bin-exp)
     (expresion (primitiva-unaria "(" expresion ")") primapp-un-exp)
-
+      
     ;; --- PUNTO 4 (miembro 2): condicional-exp ---
+    (expresion ("Si" expresion "{" expresion "}" "sino" "{" expresion "}") condicional-exp)
     ;; --- PUNTO 5 (miembro 2): variableLocal-exp ---
     ;; --- PUNTO 6 (miembro 3): procedimiento-ex ---
     ;; --- PUNTO 7 (miembro 3): app-exp ---
@@ -178,6 +179,12 @@
                       (let ((arg (evaluar-expresion exp1 amb)))
                         (aplicar-primitiva-unaria prim arg)))
       ;; --- PUNTOS 4 a 8: los demás miembros agregan sus casos aquí ---
+      (condicional-exp (test-exp true-exp false-exp)
+                       (let ((valor-test (evaluar-expresion test-exp amb)))
+                         (if (valor-verdad? valor-test)
+                             (evaluar-expresion true-exp amb)
+                             (evaluar-expresion false-exp amb)
+                             )))
       )))
 
 ;; verificar-numeros: recibe el nombre de la primitiva y dos valores; lanza
