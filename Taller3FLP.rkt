@@ -46,7 +46,7 @@
     (expresion ("Si" expresion "{" expresion "}" "sino" "{" expresion "}") condicional-exp)
     ;; --- PUNTO 5 (miembro 2): variableLocal-exp ---
     (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp)
-    ;; --- PUNTO 6 (miembro 3): procedimiento-ex ---
+    (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "{" expresion "}") procedimiento-ex)
     ;; --- PUNTO 7 (miembro 3): app-exp ---
     ;; --- PUNTO 8 (miembro 4): expresión recursiva ---
 
@@ -304,6 +304,19 @@
 ;; -------------------------------
 (ejecutar "declarar (@x=2;@y=3;@a=7;){ (@a+(@x~@y)) }")   ; 6
 (ejecutar "declarar (@x=2;@y=3;@a=7;){ (@a+@b) }")        ; 9
+
+
+
+;; ============================================================
+;; 
+;; ============================================================
+
+(define-datatype procval procval?
+  (cerradura
+   (lista-ID (list-of symbol?))
+   (exp expresion?)
+   (amb ambiente?)
+   ))
 
 
 ;; ==================================================================
