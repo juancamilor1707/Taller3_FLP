@@ -47,7 +47,7 @@
     ;; --- PUNTO 5 (miembro 2): variableLocal-exp ---
     (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp)
     (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "{" expresion "}") procedimiento-ex)
-    ;; --- PUNTO 7 (miembro 3): app-exp ---
+    
     ;; --- PUNTO 8 (miembro 4): expresión recursiva ---
 
     (primitiva-binaria ("+") primitiva-suma)
@@ -189,6 +189,9 @@
        (variableLocal-exp (ids exps cuerpo)
                          (let ((vals (map (lambda (e) (evaluar-expresion e amb)) exps)))
                            (evaluar-expresion cuerpo (extendido ids vals amb))))
+
+      (procedimiento-ex (ids cuerpo)
+                  (cerradura ids cuerpo amb))
       )))
 
 ;; verificar-numeros: recibe el nombre de la primitiva y dos valores; lanza
@@ -282,6 +285,27 @@
   (lambda (texto-programa)
     (evaluar-programa (scan&parse texto-programa))))
 
+
+
+;; ============================================================
+;; PUNTO 6 - Creacion de procedimientos
+;; ============================================================
+
+(define-datatype procval procval?
+  (cerradura
+   (lista-ID (list-of symbol?))
+   (exp expresion?)
+   (amb ambiente?)
+   ))
+
+
+
+;; ============================================================
+;; PUNTO 7 - Evaluacion de procedimientos
+;; ============================================================
+
+
+
 ;; -------------------------------
 ;; Pruebas de los puntos 1, 2 y 3 
 ;; -------------------------------
@@ -306,17 +330,11 @@
 (ejecutar "declarar (@x=2;@y=3;@a=7;){ (@a+@b) }")        ; 9
 
 
-
-;; ============================================================
-;; 
-;; ============================================================
-
-(define-datatype procval procval?
-  (cerradura
-   (lista-ID (list-of symbol?))
-   (exp expresion?)
-   (amb ambiente?)
-   ))
+;; -------------------------------
+;; Pruebas del punto 6
+;; -------------------------------
+(ejecutar "procedimiento (@x,@y,@z) { ((@x+@y)+@z) }")
+(ejecutar "procedimiento (@x) { @x }")
 
 
 ;; ==================================================================
