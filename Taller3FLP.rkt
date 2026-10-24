@@ -44,10 +44,9 @@
       
     ;; --- PUNTO 4 (miembro 2): condicional-exp ---
     (expresion ("Si" expresion "{" expresion "}" "sino" "{" expresion "}") condicional-exp)
-    ;; --- PUNTO 5 (miembro 2): variableLocal-exp ---
     (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp)
     (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "{" expresion "}") procedimiento-ex)
-    
+    (expresion ("evaluar" expresion "(" (separated-list expresion ",") ")" "finEval")app-exp)
     ;; --- PUNTO 8 (miembro 4): expresión recursiva ---
 
     (primitiva-binaria ("+") primitiva-suma)
@@ -192,6 +191,11 @@
 
       (procedimiento-ex (ids cuerpo)
                   (cerradura ids cuerpo amb))
+
+      (app-exp (rator rands)
+               (let ((proc (evaluar-expresion rator amb))
+                     (args (map (lambda (e) (evaluar-expresion e amb)) rands)))
+                 (aplicar-procedimiento proc args)))
       )))
 
 ;; verificar-numeros: recibe el nombre de la primitiva y dos valores; lanza
@@ -288,9 +292,11 @@
 
 
 ;; ============================================================
-;; PUNTO 6 - Creacion de procedimientos
+;; PUNTO 6 y 7 - Creacion y Evaluacion de procedimientos
 ;; ============================================================
 
+;; Datatype de los procedimientos: cerradura con una lista de parámetros, el
+;; cuerpo sin evaluar y el ambiente donde se creó (alcance léxico)
 (define-datatype procval procval?
   (cerradura
    (lista-ID (list-of symbol?))
@@ -299,12 +305,17 @@
    ))
 
 
-
-;; ============================================================
-;; PUNTO 7 - Evaluacion de procedimientos
-;; ============================================================
-
-
+;; aplicar-procedimiento: recibe una cerradura y los argumentos ya evaluados;
+;; liga parámetros y argumentos sobre el ambiente de la cerradura y retorna
+;; el valor de evaluar el cuerpo en ese ambiente. Es auxiliar de app-exp.
+(define aplicar-procedimiento
+  (lambda(proc args)
+    (cases procval proc
+      (cerradura (ids cuerpo amb)
+                 (if (= (length ids) (length args))
+                     (evaluar-expresion cuerpo (extendido ids args amb))
+                     (eopl:error 'aplicar-procedimiento "Se esperaban ~s argumentos, se recibieron ~s" (length ids) (length args)))))))
+  
 
 ;; -------------------------------
 ;; Pruebas de los puntos 1, 2 y 3 
@@ -335,6 +346,13 @@
 ;; -------------------------------
 (ejecutar "procedimiento (@x,@y,@z) { ((@x+@y)+@z) }")
 (ejecutar "procedimiento (@x) { @x }")
+
+;; -------------------------------
+;; Pruebas del punto 7
+;; -------------------------------
+
+(ejecutar "declarar (@x=2;@y=3;@a=procedimiento (@x,@y,@z) { ((@x+@y)+@z) };) { evaluar @a (1,2,@x) finEval }")   ; 5
+(ejecutar "declarar (@k=10;) { declarar (@f=procedimiento (@x) { (@x + @k) };) { declarar (@k=999;) { evaluar @f (1) finEval } } }")   ; 11
 
 
 ;; ==================================================================
