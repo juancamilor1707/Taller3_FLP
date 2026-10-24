@@ -47,7 +47,10 @@
     (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp)
     (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "{" expresion "}") procedimiento-ex)
     (expresion ("evaluar" expresion "(" (separated-list expresion ",") ")" "finEval")app-exp)
-    ;; --- PUNTO 8 (miembro 4): expresión recursiva ---
+    ;; --- PUNTO 8 (miembro 4): declaración de procedimiento recursivo ---
+    (expresion
+     ("declarar-rec" identificador "(" (arbno identificador) ")" "=" "{" expresion "}" "en" "{" expresion "}")
+     declararRec-exp)
 
     (primitiva-binaria ("+") primitiva-suma)
     (primitiva-binaria ("~") primitiva-resta)
@@ -99,7 +102,11 @@
   (vacio)
   (extendido (ids (list-of symbol?))
              (vals list?)
-             (amb ambiente?)))
+             (amb ambiente?))
+  (extendido-rec (proc-id symbol?)
+                 (ids (list-of symbol?))
+                 (cuerpo expresion?)
+                 (amb-anterior ambiente?)))
 
 ;; Ambiente inicial con @a..@e = 1 2 3 "hola" "FLP".
 (define ambiente-inicial
@@ -121,7 +128,11 @@
                  (let ((pos (buscar-posicion id ids)))
                    (if pos
                        (list-ref vals pos)
-                       (buscar-variable id amb-anterior)))))))
+                       (buscar-variable id amb-anterior))))
+      (extendido-rec (proc-id ids cuerpo amb-anterior)
+                     (if (eqv? id proc-id)
+                         (cerradura ids cuerpo (extendido-rec proc-id ids cuerpo amb-anterior))
+                         (buscar-variable id amb-anterior))))))
 
 ;; buscar-posicion: recibe un símbolo y una lista de símbolos. Retorna la
 ;; posición (desde 0) de la primera aparición o #f si no está. Es auxiliar
@@ -196,6 +207,9 @@
                (let ((proc (evaluar-expresion rator amb))
                      (args (map (lambda (e) (evaluar-expresion e amb)) rands)))
                  (aplicar-procedimiento proc args)))
+      (declararRec-exp (id ids cuerpo-proc cuerpo-principal)
+                       (evaluar-expresion cuerpo-principal
+                                          (extendido-rec id ids cuerpo-proc amb)))
       )))
 
 ;; verificar-numeros: recibe el nombre de la primitiva y dos valores; lanza
@@ -317,6 +331,7 @@
                      (eopl:error 'aplicar-procedimiento "Se esperaban ~s argumentos, se recibieron ~s" (length ids) (length args)))))))
   
 
+
 ;; -------------------------------
 ;; Pruebas de los puntos 1, 2 y 3 
 ;; -------------------------------
@@ -353,6 +368,13 @@
 
 (ejecutar "declarar (@x=2;@y=3;@a=procedimiento (@x,@y,@z) { ((@x+@y)+@z) };) { evaluar @a (1,2,@x) finEval }")   ; 5
 (ejecutar "declarar (@k=10;) { declarar (@f=procedimiento (@x) { (@x + @k) };) { declarar (@k=999;) { evaluar @f (1) finEval } } }")   ; 11
+
+;; -------------------------------
+;; Pruebas del punto 8
+;; -------------------------------
+;; sumaNaturales recursiva: suma 1+2+...+n
+(ejecutar "declarar-rec @sumaNat (@n) = { Si @n { (@n + evaluar @sumaNat( (@n ~ 1) ) finEval) } sino { 0 } } en { evaluar @sumaNat (5) finEval }")   ; 15
+(ejecutar "declarar-rec @sumaNat (@n) = { Si @n { (@n + evaluar @sumaNat( (@n ~ 1) ) finEval) } sino { 0 } } en { evaluar @sumaNat (10) finEval }")  ; 55
 
 
 ;; ==================================================================
