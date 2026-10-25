@@ -429,9 +429,7 @@
   evaluar @multiplicar(5, 3) finEval
 }")   ; 15
 
-;; -------------------------------
-;; Pruebas del 9d
-;; -------------------------------
+
 ;; -------------------------------
 ;; Pruebas del 9d
 ;; -------------------------------
@@ -461,6 +459,15 @@
   }
 }")   ; 12
 
+;; -------------------------------
+;; Pruebas del 9e
+;; -------------------------------
+(ejecutar "declarar (@integrantes = procedimiento () {\"Robinson_y_Sara\"}; ) {
+             declarar (@saludar = procedimiento(@f) {
+                                    procedimiento () {(\"Hola:\" concat evaluar @f () finEval)}
+                                  }; ) {
+               declarar (@decorate = evaluar @saludar (@integrantes) finEval; ) {
+                 evaluar @decorate () finEval}}}")   ; "Hola:Robinson_y_Sara"
 
 ;; ==================================================================
 ;; PUNTO 9 - Programas en el lenguaje (cada miembro agrega los suyos)
@@ -519,5 +526,13 @@
 ;; }
 ;; Resultado: @sumaParesRango(2, 7) -> 12
 
-;; 9e)
+;; 9e)@decorate
+;; declarar (@integrantes = procedimiento () {"Robinson_y_Sara"}; ) {
+;;                       declarar (@saludar = procedimiento(@f) {
+;;                                                               procedimiento () {("Hola:" concat evaluar @f () finEval)}
+;;                                          }; ){
+;;                                          declarar (@decorate = evaluar @saludar (@integrantes) finEval; ) {
+;;                                                              evaluar @decorate () finEval}}}
+
+
 ;; 9f)
