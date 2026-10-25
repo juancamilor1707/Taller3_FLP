@@ -406,6 +406,29 @@
   }
 }")   ; 10
 
+;; -------------------------------
+;; Pruebas del 9c
+;; -------------------------------
+(ejecutar "declarar-rec @multiplicar (@a @b) = {
+  Si @b {
+    (@a + evaluar @multiplicar(@a, (@b ~ 1)) finEval)
+  } sino {
+    0
+  }
+} en {
+  evaluar @multiplicar(4, 3) finEval
+}")   ; 12
+
+(ejecutar "declarar-rec @multiplicar (@a @b) = {
+  Si @b {
+    (@a + evaluar @multiplicar(@a, (@b ~ 1)) finEval)
+  } sino {
+    0
+  }
+} en {
+  evaluar @multiplicar(5, 3) finEval
+}")   ; 15
+
 ;; ==================================================================
 ;; PUNTO 9 - Programas en el lenguaje (cada miembro agrega los suyos)
 ;; ==================================================================
@@ -418,6 +441,16 @@
 ;;   } en {
 ;;     evaluar @sumarDigitos (147) finEval
 ;;   }
+;; }
+;; 9c) @multiplicar
+;; declarar-rec @multiplicar (@a @b) = {
+;;   Si @b {
+;;     (@a + evaluar @multiplicar(@a, (@b ~ 1)) finEval)
+;;   } sino {
+;;     0
+;;   }
+;; } en {
+;;   evaluar @multiplicar(4, 3) finEval
 ;; }
 ;; Resultados: @sumarDigitos(147) -> 12 ; @sumarDigitos(1234) -> 10
 ;; 9b)
