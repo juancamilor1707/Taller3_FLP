@@ -193,16 +193,18 @@
                       (let ((arg (evaluar-expresion exp1 amb)))
                         (aplicar-primitiva-unaria prim arg)))
       ;; --- PUNTOS 4 a 8: los demás miembros agregan sus casos aquí ---
-   ;; variableLocal-exp: evalúa cada expresión de exps en el ambiente actual,
-   ;; extiende el ambiente con ids y esos valores, y evalúa cuerpo en ese
-   ;; ambiente extendido.
+      ;; condicional-exp: evalúa la condición; si es verdadera (distinta de 0)
+      ;; evalúa la rama del Si, y si no, la rama del sino.
       (condicional-exp (test-exp true-exp false-exp)
                        (let ((valor-test (evaluar-expresion test-exp amb)))
                          (if (valor-verdad? valor-test)
                              (evaluar-expresion true-exp amb)
                              (evaluar-expresion false-exp amb)
                              )))
-       (variableLocal-exp (ids exps cuerpo)
+      ;; variableLocal-exp: evalúa cada expresión de exps en el ambiente actual,
+      ;; extiende el ambiente con ids y esos valores, y evalúa cuerpo en ese
+      ;; ambiente extendido.
+      (variableLocal-exp (ids exps cuerpo)
                          (let ((vals (map (lambda (e) (evaluar-expresion e amb)) exps)))
                            (evaluar-expresion cuerpo (extendido ids vals amb))))
 
