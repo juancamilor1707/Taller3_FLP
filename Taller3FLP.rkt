@@ -8,6 +8,9 @@
 ;;   - Juan Camilo Ramos Hoyos - 2438212
 ;;   - Emmanuel Paez Hurtado - 2419847
 ;; Repositorio: https://github.com/juancamilor1707/Taller3_FLP.git
+   ;; DECLARACIÓN DE USO DE IA: se usó Claude (Anthropic) como tutor para
+   ;; explicar conceptos (arbno, ambientes) y revisar errores de sintaxis.
+   ;; El código fue escrito por los integrantes del grupo.
 ;; ============================================================
 
 ;; ============================================================
@@ -190,6 +193,9 @@
                       (let ((arg (evaluar-expresion exp1 amb)))
                         (aplicar-primitiva-unaria prim arg)))
       ;; --- PUNTOS 4 a 8: los demás miembros agregan sus casos aquí ---
+   ;; variableLocal-exp: evalúa cada expresión de exps en el ambiente actual,
+   ;; extiende el ambiente con ids y esos valores, y evalúa cuerpo en ese
+   ;; ambiente extendido.
       (condicional-exp (test-exp true-exp false-exp)
                        (let ((valor-test (evaluar-expresion test-exp amb)))
                          (if (valor-verdad? valor-test)
@@ -375,12 +381,43 @@
 ;; sumaNaturales recursiva: suma 1+2+...+n
 (ejecutar "declarar-rec @sumaNat (@n) = { Si @n { (@n + evaluar @sumaNat( (@n ~ 1) ) finEval) } sino { 0 } } en { evaluar @sumaNat (5) finEval }")   ; 15
 (ejecutar "declarar-rec @sumaNat (@n) = { Si @n { (@n + evaluar @sumaNat( (@n ~ 1) ) finEval) } sino { 0 } } en { evaluar @sumaNat (10) finEval }")  ; 55
+;; -------------------------------
+;; Pruebas del 9a
+;; -------------------------------
+(ejecutar "declarar-rec @resto (@n) = {
+  Si (@n < 10) { @n } sino { evaluar @resto ( (@n ~ 10) ) finEval }
+} en {
+  declarar-rec @sumarDigitos (@n) = {
+    Si (@n < 10) { @n } sino { ( evaluar @resto (@n) finEval + evaluar @sumarDigitos ( ((@n ~ evaluar @resto (@n) finEval) / 10) ) finEval ) }
+  } en {
+    evaluar @sumarDigitos (147) finEval
+  }
+}")   ; 12
 
+(ejecutar "declarar-rec @resto (@n) = {
+  Si (@n < 10) { @n } sino { evaluar @resto ( (@n ~ 10) ) finEval }
+} en {
+  declarar-rec @sumarDigitos (@n) = {
+    Si (@n < 10) { @n } sino { ( evaluar @resto (@n) finEval + evaluar @sumarDigitos ( ((@n ~ evaluar @resto (@n) finEval) / 10) ) finEval ) }
+  } en {
+    evaluar @sumarDigitos (1234) finEval
+  }
+}")   ; 10
 
 ;; ==================================================================
 ;; PUNTO 9 - Programas en el lenguaje (cada miembro agrega los suyos)
 ;; ==================================================================
-;; 9a)
+;; 9a) @sumarDigitos
+;; declarar-rec @resto (@n) = {
+;;   Si (@n < 10) { @n } sino { evaluar @resto ( (@n ~ 10) ) finEval }
+;; } en {
+;;   declarar-rec @sumarDigitos (@n) = {
+;;     Si (@n < 10) { @n } sino { ( evaluar @resto (@n) finEval + evaluar @sumarDigitos ( ((@n ~ evaluar @resto (@n) finEval) / 10) ) finEval ) }
+;;   } en {
+;;     evaluar @sumarDigitos (147) finEval
+;;   }
+;; }
+;; Resultados: @sumarDigitos(147) -> 12 ; @sumarDigitos(1234) -> 10
 ;; 9b)
 ;; 9c)
 ;; 9d)
