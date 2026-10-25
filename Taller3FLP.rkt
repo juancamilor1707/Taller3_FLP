@@ -469,6 +469,17 @@
                declarar (@decorate = evaluar @saludar (@integrantes) finEval; ) {
                  evaluar @decorate () finEval}}}")   ; "Hola:Robinson_y_Sara"
 
+;; -------------------------------
+;; Pruebas del 9f
+;; -------------------------------
+
+(ejecutar "declarar (@integrantes = procedimiento () {\"Robinson_y_Sara\"}; ) {
+             declarar (@saludar = procedimiento (@f) {
+                                    procedimiento (@msg) {((\"Hola:\" concat evaluar @f () finEval) concat @msg)}
+                                  }; ) {
+               declarar (@decorate = evaluar @saludar (@integrantes) finEval; ) {
+                 evaluar @decorate (\"_ProfesoresFLP\") finEval}}}")   ; "Hola:Robinson_y_Sara_ProfesoresFLP"
+
 ;; ==================================================================
 ;; PUNTO 9 - Programas en el lenguaje (cada miembro agrega los suyos)
 ;; ==================================================================
@@ -535,4 +546,10 @@
 ;;                                                              evaluar @decorate () finEval}}}
 
 
-;; 9f)
+;; 9f)decorador @saludar con mensaje final
+;; declarar (@integrantes = procedimiento () {"Robinson_y_Sara"}; ) {
+;;   declarar (@saludar = procedimiento (@f) {
+;;                           procedimiento (@x) {(("Hola:" concat evaluar @f () finEval) concat @msg)}
+;;                         }; ) {
+;;     declarar (@decorate = evaluar @saludar (@integrantes) finEval; ) {
+;;       evaluar @decorate ("_ProfesoresFLP") finEval}}}
