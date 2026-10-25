@@ -429,6 +429,39 @@
   evaluar @multiplicar(5, 3) finEval
 }")   ; 15
 
+;; -------------------------------
+;; Pruebas del 9d
+;; -------------------------------
+;; -------------------------------
+;; Pruebas del 9d
+;; -------------------------------
+(ejecutar "declarar-rec @esPar (@n) = {
+  Si @n {
+    Si (@n ~ 1) {
+      evaluar @esPar((@n ~ 2)) finEval
+    } sino {
+      0
+    }
+  } sino {
+    1
+  }
+} en {
+  declarar-rec @sumaParesRango (@a @b) = {
+    Si (@a > @b) {
+      0
+    } sino {
+      Si evaluar @esPar(@a) finEval {
+        (@a + evaluar @sumaParesRango(add1(@a), @b) finEval)
+      } sino {
+        evaluar @sumaParesRango(add1(@a), @b) finEval
+      }
+    }
+  } en {
+    evaluar @sumaParesRango(2, 7) finEval
+  }
+}")   ; 12
+
+
 ;; ==================================================================
 ;; PUNTO 9 - Programas en el lenguaje (cada miembro agrega los suyos)
 ;; ==================================================================
@@ -442,6 +475,10 @@
 ;;     evaluar @sumarDigitos (147) finEval
 ;;   }
 ;; }
+;; Resultados: @sumarDigitos(147) -> 12 ; @sumarDigitos(1234) -> 10
+
+;; 9b)
+
 ;; 9c) @multiplicar
 ;; declarar-rec @multiplicar (@a @b) = {
 ;;   Si @b {
@@ -452,9 +489,35 @@
 ;; } en {
 ;;   evaluar @multiplicar(4, 3) finEval
 ;; }
-;; Resultados: @sumarDigitos(147) -> 12 ; @sumarDigitos(1234) -> 10
-;; 9b)
-;; 9c)
-;; 9d)
+;; Resultados: @multiplicar(4, 3) -> 12 ; @multiplicar(5, 3) -> 15
+
+;; 9d) @sumaParesRango
+;; declarar-rec @esPar (@n) = {
+;;   Si @n {
+;;     Si (@n ~ 1) {
+;;       evaluar @esPar((@n ~ 2)) finEval
+;;     } sino {
+;;       0
+;;     }
+;;   } sino {
+;;     1
+;;   }
+;; } en {
+;;   declarar-rec @sumaParesRango (@a @b) = {
+;;     Si (@a > @b) {
+;;       0
+;;     } sino {
+;;       Si evaluar @esPar(@a) finEval {
+;;         (@a + evaluar @sumaParesRango(add1(@a), @b) finEval)
+;;       } sino {
+;;         evaluar @sumaParesRango(add1(@a), @b) finEval
+;;       }
+;;     }
+;;   } en {
+;;     evaluar @sumaParesRango(2, 7) finEval
+;;   }
+;; }
+;; Resultado: @sumaParesRango(2, 7) -> 12
+
 ;; 9e)
 ;; 9f)
