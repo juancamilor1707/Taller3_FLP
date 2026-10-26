@@ -383,6 +383,7 @@
 ;; sumaNaturales recursiva: suma 1+2+...+n
 (ejecutar "declarar-rec @sumaNat (@n) = { Si @n { (@n + evaluar @sumaNat( (@n ~ 1) ) finEval) } sino { 0 } } en { evaluar @sumaNat (5) finEval }")   ; 15
 (ejecutar "declarar-rec @sumaNat (@n) = { Si @n { (@n + evaluar @sumaNat( (@n ~ 1) ) finEval) } sino { 0 } } en { evaluar @sumaNat (10) finEval }")  ; 55
+
 ;; -------------------------------
 ;; Pruebas del 9a
 ;; -------------------------------
@@ -405,6 +406,32 @@
     evaluar @sumarDigitos (1234) finEval
   }
 }")   ; 10
+
+;; -------------------------------
+;; Pruebas del 9b
+;; -------------------------------
+
+(ejecutar "declarar-rec @sumaNaturales (@n) = {
+  Si @n {
+    (@n + evaluar @sumaNaturales((@n ~ 1)) finEval)
+  } sino {
+    0
+  }
+} en {
+  evaluar @sumaNaturales(5) finEval
+}")   ; 15
+
+(ejecutar "declarar-rec @sumaNaturales (@n) = {
+  Si @n {
+    (@n + evaluar @sumaNaturales((@n ~ 1)) finEval)
+  } sino {
+    0
+  }
+} en {
+  evaluar @sumaNaturales(10) finEval
+}")   ; 55
+
+
 
 ;; -------------------------------
 ;; Pruebas del 9c
@@ -495,7 +522,19 @@
 ;; }
 ;; Resultados: @sumarDigitos(147) -> 12 ; @sumarDigitos(1234) -> 10
 
-;; 9b)
+;; 9b)@sumaNaturales
+;; Sintaxis propuesta para recursión (punto 8):
+;;   declarar-rec <id> (<params>) = { <cuerpo> } en { <expresión> }
+;; El nombre queda visible dentro de su propio cuerpo (extendido-rec).
+;; declarar-rec @sumaNaturales (@n) = {
+;;   Si @n {
+;;     (@n + evaluar @sumaNaturales((@n ~ 1)) finEval)
+;;   } sino {
+;;     0
+;;   }
+;; } en {
+;;   evaluar @sumaNaturales(5) finEval
+;; }
 
 ;; 9c) @multiplicar
 ;; declarar-rec @multiplicar (@a @b) = {
